@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Medical Insurance Cost Predictor</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&family=Roboto:wght@400;500&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: url('https://images.unsplash.com/photo-1581092918367-9d9b3dfb69f0') no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+      min-height: 100vh;
+      position: relative;
+    }
+    body {
+        background: url("{{ url_for('static', filename='background 3.jpg') }}") no-repeat center center fixed;
+        background-size: cover;
+      }
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: -1;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .logo {
+      width: 180px;
+      height: 180px;
+      margin: 20px auto;
+      display: block;
+      border-radius: 50%;
+      object-fit: contain;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 10px;
+    }
+
+    h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 10px rgba(0, 194, 255, 0.7);
+      color: #4facfe;
+    }
+
+    .form-container {
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 25px;
+      margin: 30px 0;
+      border: 1px solid rgba(79, 172, 254, 0.3);
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      color: #4facfe;
+      font-size: 0.9rem;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid rgba(79, 172, 254, 0.5);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.4);
+      color: white;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: #4facfe;
+      box-shadow: 0 0 10px rgba(79, 172, 254, 0.5);
+    }
+
+    .predict-btn {
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      margin-top: 20px;
+      border-radius: 50px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+    }
+
+    .predict-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(79, 172, 254, 0.6);
+    }
+
+    .results {
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 15px;
+      padding: 25px;
+      margin-top: 20px;
+      border: 1px solid rgba(79, 172, 254, 0.3);
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+      animation: fadeIn 0.5s ease-out;
+      text-align: left;
+      font-size: 1rem;
+      line-height: 1.8;
+    }
+
+    .price-highlight {
+      font-size: 1.6rem;
+      color: #00f2fe;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+      h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Replace with your actual logo -->
+    <img src="{{ url_for('static', filename='insurance_logo.jpg') }}" alt="Logo" class="logo" />
+
+    <h1>Medical Insurance Cost Predictor</h1>
+
+    <!-- Insurance Input Form -->
+    <form action="/predict" method="POST" class="form-container">
+      <div class="form-grid">
+        <div>
+          <label for="age">Age</label>
+          <input
+            type="number"
+            name="age"
+            id="age"
+            required
+            placeholder="Enter age in years"
+            value="{{ age if age is defined else '' }}"
+            min="0"
+          />
+        </div>
+
+        <div>
+          <label for="sex">Sex</label>
+          <select name="sex" id="sex" required>
+            <option value="male" {% if sex == 'male' %}selected{% endif %}>Male</option>
+            <option value="female" {% if sex == 'female' %}selected{% endif %}>Female</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="bmi">BMI (Body Mass Index)</label>
+          <input
+            type="number"
+            step="0.1"
+            name="bmi"
+            id="bmi"
+            required
+            placeholder="e.g. 28.5"
+            value="{{ bmi if bmi is defined else '' }}"
+            min="0"
+          />
+        </div>
+
+        <div>
+          <label for="children">Number of Children</label>
+          <input
+            type="number"
+            name="children"
+            id="children"
+            required
+            placeholder="0-5"
+            value="{{ children if children is defined else '' }}"
+            min="0"
+            max="5"
+          />
+        </div>
+
+        <div>
+          <label for="smoker">Smoker</label>
+          <select name="smoker" id="smoker" required>
+            <option value="yes" {% if smoker == 'yes' %}selected{% endif %}>Yes</option>
+            <option value="no" {% if smoker == 'no' %}selected{% endif %}>No</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="region">Region</label>
+          <select name="region" id="region" required>
+            <option value="southwest" {% if region == 'southwest' %}selected{% endif %}>Southwest</option>
+            <option value="southeast" {% if region == 'southeast' %}selected{% endif %}>Southeast</option>
+            <option value="northwest" {% if region == 'northwest' %}selected{% endif %}>Northwest</option>
+            <option value="northeast" {% if region == 'northeast' %}selected{% endif %}>Northeast</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="submit" class="predict-btn">Predict Insurance Cost</button>
+    </form>
+
+    <!-- Prediction Results -->
+    {% if prediction is defined %}
+      <div class="results" id="results">
+        <h2>Prediction Result</h2>
+
+        <div>
+          <strong>Age:</strong> {{ age }}<br />
+          <strong>Sex:</strong> {{ sex|capitalize }}<br />
+          <strong>BMI:</strong> {{ bmi }}<br />
+          <strong>Children:</strong> {{ children }}<br />
+          <strong>Smoker:</strong> {{ smoker|capitalize }}<br />
+          <strong>Region:</strong> {{ region|capitalize }}
+        </div>
+
+        <div class="price-highlight">
+          Estimated Cost: ₹{{ prediction }}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</body>
+</html>
